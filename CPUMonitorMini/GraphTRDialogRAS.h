@@ -1,7 +1,7 @@
 /**
  *----------------------------------------------------------------------------
  *
- * @file	$Id: GraphTRDialogRAS.h 118 2008-05-11 11:26:18Z Shiono $
+ * @file	$Id: GraphTRDialogRAS.h 133 2008-06-15 06:23:53Z Salt $
  * @brief	CGraphTRDialog を継承した RAS 情報を取得するクラス
  *
  * @author  Salt
@@ -28,7 +28,8 @@ private:
 	BOOL m_bDisabledPrev;
     HRASCONN m_hrasconn;
 	DWORD m_dwRcvedPrev, m_dwXmitedPrev;
-
+	void Disconnect();
+	
 	int m_nLastTransmitted;		// tap での情報表示用
 	int m_nLastReceived;
 

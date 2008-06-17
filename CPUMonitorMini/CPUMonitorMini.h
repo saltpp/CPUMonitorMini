@@ -1,7 +1,7 @@
 /**
  *----------------------------------------------------------------------------
  *
- * @file	$Id: CPUMonitorMini.h 131 2008-05-18 10:56:20Z Shiono $
+ * @file	$Id: CPUMonitorMini.h 134 2008-06-17 11:22:35Z Salt $
  * @brief	CPUMonitorMini の main
  *			WinMain() で、ini ファイル読んで、dialog class のインスタンスを作って、ウィンドウを登録するところまで。
  *
@@ -14,8 +14,8 @@
 #include "resourceppc.h"
 
 #define PROGRAM_NAME    _T("CPUMonitorMini")
-#define PROGRAM_VERSION _T("Ver.0.34")
-//#define PROGRAM_VERSION _T("$Revision: 131 $")
+#define PROGRAM_VERSION _T("Ver.0.40")
+//#define PROGRAM_VERSION _T("$Revision: 134 $")
 #define PROGRAM_RIGHT   _T("Programmed by Salt")
 
 

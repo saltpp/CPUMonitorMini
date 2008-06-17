@@ -1,7 +1,7 @@
 /**
  *----------------------------------------------------------------------------
  *
- * @file	$Id: GraphTRDialog.cpp 118 2008-05-11 11:26:18Z Shiono $
+ * @file	$Id: GraphTRDialog.cpp 133 2008-06-15 06:23:53Z Salt $
  * @brief	CGraphDialog を継承して、棒グラフの描き方を、Received, Transmitted で重ねて表せるように変更したクラス
  *			データは、さらにこれを継承した方で作ってもらう
  *
@@ -18,6 +18,8 @@
 CGraphTRDialog::CGraphTRDialog(void)
 : m_nYLinePrev(-1)
 , m_bHidPrev(TRUE)
+, m_nElapseAutoDisconnect(0)
+, m_nCountAutoDisconnect(0)
 {
 }
 

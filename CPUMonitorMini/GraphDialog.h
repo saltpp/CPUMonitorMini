@@ -1,7 +1,7 @@
 /**
  *----------------------------------------------------------------------------
  *
- * @file	$Id: GraphDialog.h 118 2008-05-11 11:26:18Z Shiono $
+ * @file	$Id: GraphDialog.h 133 2008-06-15 06:23:53Z Salt $
  * @brief	CPopupDialog を継承したグラフを描くためのクラス
  *			データは、さらにこれを継承した方で作ってもらう
  *
@@ -24,7 +24,6 @@ public:
 	static const int NUM_COLOR = 101;		// 0..100
 
 private:
-	int m_nTimerInterval;
 	int m_nTimerID;
 
 	int m_nYLinePrev;
@@ -35,6 +34,8 @@ private:
 	COLORREF *m_pclrBar;
 
 protected:
+	int m_nTimerInterval;
+
 	HDC     m_hdcMem;
 	HBITMAP m_hbmpMem;
 	HBITMAP m_hbmpMemPrev;

@@ -1,7 +1,7 @@
 /**
  *----------------------------------------------------------------------------
  *
- * @file	$Id: GraphTRDialogNDIS.cpp 117 2008-05-11 11:21:40Z Shiono $
+ * @file	$Id: GraphTRDialogNDIS.cpp 133 2008-06-15 06:23:53Z Salt $
  * @brief	CGraphTRDialog を継承した NDIS 情報を取得するクラス
  *
  * @author  Salt
@@ -159,6 +159,32 @@ BOOL CGraphTRDialogNDIS::OpenNdisUio()
 }
 
 
+LONG CGraphTRDialogNDIS::GetSignalLevel()
+{
+	TCHAR szBuf[1024] = {0};
+	PNDISUIO_QUERY_OID pQueryOID;
+
+	pQueryOID                = (PNDISUIO_QUERY_OID) szBuf;
+	pQueryOID->Oid           = OID_802_11_RSSI;
+	pQueryOID->ptcDeviceName = m_szWlanDeviceName;
+
+	DWORD dwReturned = 0;
+	BOOL bResult = DeviceIoControl(m_hNDIS,
+								IOCTL_NDISUIO_QUERY_OID_VALUE,
+								(LPVOID) szBuf, sizeof(szBuf),
+								(LPVOID) szBuf, sizeof(szBuf),
+								&dwReturned,
+								NULL);
+	if (bResult) {
+		LONG lSignalLevel = 0;
+		memcpy(&lSignalLevel, pQueryOID->Data, sizeof(LONG));
+		lSignalLevel = lSignalLevel + 160;	// -60 ぐらいでかなり強そうなので、それを 100 にしてみる		// (lSignalLevel + 200) / 2;	// The normal range for the RSSI values is from -10 through -200 dBm
+		return lSignalLevel;
+	}
+	else
+		return -1;
+}
+
 BOOL CGraphTRDialogNDIS::GetData(int &nBarTransmitted, int &nBarReceived, BOOL bLine, int &nLine)
 {
 	if (m_nNDISCount) {		// レジストリの Count が１になったらチェックを始める
@@ -210,9 +236,27 @@ BOOL CGraphTRDialogNDIS::GetData(int &nBarTransmitted, int &nBarReceived, BOOL b
 							ullPacketsReceivedPrev = statistics.PacketsReceived;
 							ullPacketsSentPrev     = statistics.PacketsSent;
 
-							// Line Graph
-							nLine = statistics.LinkSpeed / 1100;	// LinkSpped is in 100bits/s. 10Mb/s = 100000, 11MB/s = 110000
-							nLine = min(max(0, nLine), 100);
+
+							// AutoDisconnect
+							if (m_nElapseAutoDisconnect) {
+								if (m_nLastReceived) {			// 何かしら受信したらクリア
+									m_nCountAutoDisconnect = 0;
+								}
+								else {
+									++m_nCountAutoDisconnect;
+									if (m_nCountAutoDisconnect > m_nElapseAutoDisconnect) {
+										TurnWLANPowerOff();
+										m_nCountAutoDisconnect = 0;
+									}
+								}
+							}
+
+							// Line Graph							
+							// nLine = statistics.LinkSpeed / 1100;	// LinkSpped is in 100bits/s. 10Mb/s = 100000, 11MB/s = 110000
+							nLine = GetSignalLevel();
+							if (nLine == -1)
+								nLine = m_nLinePrev;
+							m_nLinePrev = nLine = min(max(0, nLine), 100);
 
 							// １回目は、差分が正しく取れてないので消す
 							if (m_bDisabledPrev) {
@@ -247,6 +291,18 @@ BOOL CGraphTRDialogNDIS::GetData(int &nBarTransmitted, int &nBarReceived, BOOL b
 
 }
 
+// http://blog.tauchi.net/2007/12/wifiautodisconnect.html を参考にさせてもらいました。ありがとうございます。
+void CGraphTRDialogNDIS::TurnWLANPowerOff()
+{
+	HANDLE hEvent = CreateEvent(NULL, FALSE, FALSE, _T("WLanPowOff"));
+
+	if (hEvent != NULL) {
+		SetEvent(hEvent);
+		CloseHandle(hEvent);
+		hEvent = NULL;
+	}
+}
+
 
 BOOL CGraphTRDialogNDIS::OnLButtonDown(HWND hWnd, POINT &point)
 {
@@ -259,6 +315,8 @@ BOOL CGraphTRDialogNDIS::OnLButtonDown(HWND hWnd, POINT &point)
 					 m_nLastReceived);
 
 	MessageBox(hWnd, szBuf, PROGRAM_NAME _T(" ") PROGRAM_VERSION, MB_OK);
+
+
 
 	return TRUE;
 }

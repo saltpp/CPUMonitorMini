@@ -1,7 +1,7 @@
 /**
  *----------------------------------------------------------------------------
  *
- * @file	$Id: GraphTRDialogNDIS.h 118 2008-05-11 11:26:18Z Shiono $
+ * @file	$Id: GraphTRDialogNDIS.h 133 2008-06-15 06:23:53Z Salt $
  * @brief	CGraphTRDialog Çåpè≥ÇµÇΩ NDIS èÓïÒÇéÊìæÇ∑ÇÈÉNÉâÉX
  *
  * @author  Salt
@@ -26,8 +26,12 @@ private:
 	void CloseNdisUio();
 	BOOL OpenNdisUio();
 	//BOOL GetStatistics();
+	LONG GetSignalLevel();
+	void TurnWLANPowerOff();
+
 	DWORD m_dwTickPrev;
 	BOOL m_bDisabledPrev;
+	int m_nLinePrev;
 
 	HREGNOTIFY m_hrnNetworkCount;
 

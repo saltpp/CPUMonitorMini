@@ -1,7 +1,7 @@
 /**
  *----------------------------------------------------------------------------
  *
- * @file	$Id: GraphTRDialogRAS.cpp 131 2008-05-18 10:56:20Z Shiono $
+ * @file	$Id: GraphTRDialogRAS.cpp 133 2008-06-15 06:23:53Z Salt $
  * @brief	CGraphTRDialog を継承した RAS 情報を取得するクラス
  *
  * @author  Salt
@@ -201,6 +201,20 @@ BOOL CGraphTRDialogRAS::GetData(int &nBarTransmitted, int &nBarReceived, BOOL bL
 					m_dwRcvedPrev  = rasstats.dwBytesRcved;
 					m_dwXmitedPrev = rasstats.dwBytesXmited;
 
+					// AutoDisconnect
+					if (m_nElapseAutoDisconnect) {
+						if (m_nLastReceived) {			// 何かしら受信したらクリア
+							m_nCountAutoDisconnect = 0;
+						}
+						else {
+							++m_nCountAutoDisconnect;
+							if (m_nCountAutoDisconnect > m_nElapseAutoDisconnect) {
+								Disconnect();
+								m_nCountAutoDisconnect = 0;
+							}
+						}
+					}
+					
 					// １回目は、差分が正しく取れてないので消す
 					if (m_bDisabledPrev) {
 						m_bDisabledPrev = FALSE;
@@ -232,6 +246,13 @@ BOOL CGraphTRDialogRAS::GetData(int &nBarTransmitted, int &nBarReceived, BOOL bL
 }
 
 
+void CGraphTRDialogRAS::Disconnect()
+{
+	if (m_hrasconn) {
+		RasHangUp(m_hrasconn);
+	}
+}
+
 BOOL CGraphTRDialogRAS::OnLButtonDown(HWND hWnd, POINT &point)
 {
 	TCHAR szBuf[0x100];		/// @TODO バッファサイズはどこかで #define しよう
@@ -245,9 +266,7 @@ BOOL CGraphTRDialogRAS::OnLButtonDown(HWND hWnd, POINT &point)
 	int nResult = MessageBox(hWnd, szBuf, PROGRAM_NAME _T(" ") PROGRAM_VERSION, MB_OKCANCEL);
 	
 	if (nResult == IDOK) {
-		if (m_hrasconn) {
-			RasHangUp(m_hrasconn);
-		}
+		Disconnect();
 	}
 	return TRUE;
 }

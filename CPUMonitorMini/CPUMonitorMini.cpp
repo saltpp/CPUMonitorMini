@@ -1,7 +1,7 @@
 /**
  *----------------------------------------------------------------------------
  *
- * @file	$Id: CPUMonitorMini.cpp 131 2008-05-18 10:56:20Z Shiono $
+ * @file	$Id: CPUMonitorMini.cpp 133 2008-06-15 06:23:53Z Salt $
  * @brief	CPUMonitorMini の main
  *			WinMain() で、ini ファイル読んで、dialog class のインスタンスを作って、ウィンドウを登録するところまで。
  *
@@ -116,6 +116,8 @@ LOCAL int RAS_TransmittedMax            = 32;
 LOCAL BOOL RAS_PlotRFStrength           = TRUE;
 LOCAL COLORREF RAS_ColorRFStrength      = RGB(0xff, 0xff, 0xff);
 
+LOCAL int RAS_AutoDisconnect            = 0;	// in second. 0 means not disconnect.
+
 
 // NDIS
 LOCAL BOOL NDIS_Enable                  = TRUE;
@@ -136,6 +138,7 @@ LOCAL int NDIS_TransmittedMax           = 32;
 LOCAL BOOL NDIS_PlotRFStrength          = TRUE;
 LOCAL COLORREF NDIS_ColorRFStrength     = RGB(0xff, 0xff, 0xff);
 
+LOCAL int NDIS_AutoDisconnect           = 0;	// in second. 0 means not disconnect.
 
 
 // ini のキー文字列と変数名をテーブルにしておく
@@ -186,6 +189,7 @@ LOCAL CIniFile::INI_KEY l_iniKeyTable[] = {
 	{_T("RAS_PlotRFStrength"),        &RAS_PlotRFStrength,               10, },
 	{_T("RAS_ColorRFStrength"),       (int *) &RAS_ColorRFStrength,      16, },
 
+	{_T("RAS_AutoDisconnect"),        &RAS_AutoDisconnect,               10, },
 
 	// NDIS Window
 	{_T("NDIS_Enable"),               &NDIS_Enable,                      10, },
@@ -205,6 +209,9 @@ LOCAL CIniFile::INI_KEY l_iniKeyTable[] = {
 
 	{_T("NDIS_PlotRFStrength"),       &NDIS_PlotRFStrength,              10, },
 	{_T("NDIS_ColorRFStrength"),      (int *) &NDIS_ColorRFStrength,     16, },
+
+	{_T("NDIS_AutoDisconnect"),       &NDIS_AutoDisconnect,              10, },
+
 
 
 	{NULL,                            NULL,                              0,  },
@@ -385,6 +392,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
 			l_pdlgRAS->SetColorLineGraph(RAS_ColorRFStrength);
 			l_pdlgRAS->SetMaxTransmitted(RAS_TransmittedMax);
 			l_pdlgRAS->SetMaxReceived(RAS_ReceivedMax);
+			l_pdlgRAS->SetAutoDisconnectElapse(RAS_AutoDisconnect);
 			// 値のチェック＆修正
 			l_pdlgRAS->NormalizeUserSettings();
 			// Window の作成
@@ -407,6 +415,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
 			l_pdlgNDIS->SetColorLineGraph(NDIS_ColorRFStrength);
 			l_pdlgNDIS->SetMaxTransmitted(NDIS_TransmittedMax);
 			l_pdlgNDIS->SetMaxReceived(NDIS_ReceivedMax);
+			l_pdlgNDIS->SetAutoDisconnectElapse(NDIS_AutoDisconnect);
 			// 値のチェック＆修正
 			l_pdlgNDIS->NormalizeUserSettings();
 			// Window の作成
