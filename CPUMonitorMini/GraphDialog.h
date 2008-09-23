@@ -1,7 +1,7 @@
 /**
  *----------------------------------------------------------------------------
  *
- * @file	$Id: GraphDialog.h 133 2008-06-15 06:23:53Z Salt $
+ * @file	$Id: GraphDialog.h 137 2008-09-23 11:57:05Z Salt $
  * @brief	CPopupDialog を継承したグラフを描くためのクラス
  *			データは、さらにこれを継承した方で作ってもらう
  *
@@ -44,6 +44,10 @@ protected:
 	HBITMAP m_hbmpMemBar;
 	HBITMAP m_hbmpMemBarPrev;
 
+	HDC     m_hdcMemFont;
+	HBITMAP m_hbmpMemFont;
+	HBITMAP m_hbmpMemFontPrev;
+
 	HPEN    m_hpenMem;
 	HPEN    m_hpenPrev;
 	int     m_nBarWidth;	// 0..m_nWindowWidth
@@ -55,12 +59,14 @@ protected:
 	COLORREF m_clrBar100;
 	BOOL     m_bGradation;
 	BOOL     m_bFillBar;
+	BOOL     m_bShowPercentage;
 
 	BOOL     m_bPlotLineGraph;
 	COLORREF m_clrLineGraph;
 
 	void FillSolidRect(HDC hDC, COLORREF clr, RECT *pRect);
 	void DrawLineGraph(int nValue, int nLeft, int nRight);
+	void DrawPercentage(HDC hdcDest, int nX, int nY, int nValue);
 
 	// message handlers
 	virtual BOOL OnInitDialog(HWND hWnd);
@@ -85,6 +91,7 @@ public:
 	void SetColorBar(COLORREF clr0, COLORREF clr50, COLORREF clr100) { m_clrBar0 = clr0; m_clrBar50 = clr50; m_clrBar100 = clr100; }
 	void SetGradation(BOOL b)                                        { m_bGradation            = b;   }
 	void SetFillBar(BOOL b)                                          { m_bFillBar              = b;   }
+	void SetShowPercentage(BOOL b)                                   { m_bShowPercentage       = b;   }
 	void SetPlotLineGraph(BOOL b)                                    { m_bPlotLineGraph        = b;   }
 	void SetColorLineGraph(COLORREF clr)                             { m_clrLineGraph          = clr; }
 	void NormalizeUserSettings(void);

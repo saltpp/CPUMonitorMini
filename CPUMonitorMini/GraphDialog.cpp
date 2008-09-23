@@ -1,7 +1,7 @@
 /**
  *----------------------------------------------------------------------------
  *
- * @file	$Id: GraphDialog.cpp 116 2008-05-11 09:41:37Z Shiono $
+ * @file	$Id: GraphDialog.cpp 137 2008-09-23 11:57:05Z Salt $
  * @brief	CPopupDialog を継承したグラフを描くためのクラス
  *			データは、さらにこれを継承した方で作ってもらう
  *
@@ -12,6 +12,7 @@
 
 #include "StdAfx.h"
 #include "GraphDialog.h"
+#include "resourceppc.h"
 
 
 
@@ -19,6 +20,7 @@ CGraphDialog::CGraphDialog(void)
 : m_nYLinePrev(-1)
 , m_hdcMem(NULL)
 , m_hdcMemBar(NULL)
+, m_hdcMemFont(NULL)
 , m_pclrBar(NULL)
 {
 }
@@ -97,6 +99,12 @@ void CGraphDialog::CreateMemDC(HWND hwnd)
 		m_pclrBar = new COLORREF[NUM_COLOR];
 	}
 
+	if (m_bShowPercentage) {
+		m_hdcMemFont  = CreateCompatibleDC(hdc);
+		m_hbmpMemFont = LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_BITMAP_FONT));	// GetWindowLong(hwnd, GWL_HINSTANCE) だと、GWL_HINSTANCE が見つからず。GetModuleHandle(NULL) でもいいか？
+		m_hbmpMemFontPrev = (HBITMAP) SelectObject(m_hdcMemFont, m_hbmpMemFont);
+	}
+	
 	ReleaseDC(hwnd, hdc);
 
 
@@ -143,6 +151,13 @@ void CGraphDialog::DeleteMemDC(void)
 		DeleteObject(m_hpenMem);
 	}
 
+	if (m_hdcMemFont) {
+		SelectObject(m_hdcMemFont, m_hbmpMemFontPrev);
+		DeleteObject(m_hbmpMemFont);
+		DeleteObject(m_hdcMemFont);
+		m_hdcMemFont = NULL;
+	}
+	
 	if (m_hdcMemBar) {
 		SelectObject(m_hdcMemBar, m_hbmpMemBarPrev);
 		DeleteObject(m_hbmpMemBar);
@@ -217,6 +232,21 @@ void CGraphDialog::DrawLineGraph(int nValue, int nLeft, int nRight)
 	}
 }
 
+// 5x7 の文字に左と上下に枠を付けて 6x9 で描画
+void CGraphDialog::DrawPercentage(HDC hdcDest, int nX, int nY, int nValue)
+{
+	if (nValue >= 100) {
+		BitBlt(hdcDest, nX,      nY, 6 + 6 + 1, 9, m_hdcMemFont, 6 * 10,            0, SRCCOPY);		// 100
+		BitBlt(hdcDest, nX + 12, nY, 6 + 1, 9,     m_hdcMemFont, 6 * 12,            0, SRCCOPY);		// %
+	}
+	else {
+		BitBlt(hdcDest, nX,      nY, 6,     9,     m_hdcMemFont, 6 * (nValue / 10), 0, SRCCOPY);		// 上位 
+		BitBlt(hdcDest, nX + 6,  nY, 6,     9,     m_hdcMemFont, 6 * (nValue % 10), 0, SRCCOPY);		// 下位
+		BitBlt(hdcDest, nX + 12, nY, 6 + 1, 9,     m_hdcMemFont, 6 * 12,            0, SRCCOPY);		// %
+	}
+}
+
+
 BOOL CGraphDialog::OnTimer(HWND hWnd, int nIDEvent)
 {
 	//BringWindowToTop(hWnd);
@@ -267,6 +297,12 @@ BOOL CGraphDialog::OnTimer(HWND hWnd, int nIDEvent)
 		// 線グラフ
 		if (m_bPlotLineGraph) {
 			DrawLineGraph(nLine, rect.left, rect.right);
+		}
+
+	
+		// パーセンテージ
+		if (m_bShowPercentage) {
+			DrawPercentage(m_hdcMem, 0, 0, nBar);
 		}
 
 		InvalidateRect(hWnd, NULL, TRUE);

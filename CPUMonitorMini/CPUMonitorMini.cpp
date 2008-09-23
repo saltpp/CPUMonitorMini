@@ -1,7 +1,7 @@
 /**
  *----------------------------------------------------------------------------
  *
- * @file	$Id: CPUMonitorMini.cpp 133 2008-06-15 06:23:53Z Salt $
+ * @file	$Id: CPUMonitorMini.cpp 137 2008-09-23 11:57:05Z Salt $
  * @brief	CPUMonitorMini の main
  *			WinMain() で、ini ファイル読んで、dialog class のインスタンスを作って、ウィンドウを登録するところまで。
  *
@@ -90,6 +90,7 @@ LOCAL COLORREF ColorBar50               = RGB(0xff, 0xff, 0x00);
 LOCAL COLORREF ColorBar100              = RGB(0xff, 0x00, 0x00);
 LOCAL BOOL Gradation                    = TRUE;
 LOCAL BOOL FillBar                      = FALSE;
+LOCAL BOOL ShowPercentage               = FALSE;
 
 LOCAL BOOL PlotFreeMemory               = TRUE;
 LOCAL COLORREF ColorFreeMemory          = RGB(0xff, 0xff, 0xff);
@@ -163,6 +164,7 @@ LOCAL CIniFile::INI_KEY l_iniKeyTable[] = {
 	{_T("ColorBar100"),               (int *) &ColorBar100,              16, },
 	{_T("Gradation"),                 &Gradation,                        10, },
 	{_T("FillBar"),                   &FillBar,                          10, },
+	{_T("ShowPercentage"),            &ShowPercentage,                   10, },
 
 	{_T("PlotFreeMemory"),            &PlotFreeMemory,                   10, },
 	{_T("ColorFreeMemory"),           (int *) &ColorFreeMemory,          16, },
@@ -366,6 +368,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
 		l_pdlgCPU->SetColorBar(ColorBar0, ColorBar50, ColorBar100);
 		l_pdlgCPU->SetGradation(Gradation);
 		l_pdlgCPU->SetFillBar(FillBar);
+		l_pdlgCPU->SetShowPercentage(ShowPercentage);
 		l_pdlgCPU->SetPlotLineGraph(PlotFreeMemory);
 		l_pdlgCPU->SetColorLineGraph(ColorFreeMemory);
 		l_pdlgCPU->SetMinFreeMemory(FreeMemoryMin);

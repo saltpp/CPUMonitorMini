@@ -1,7 +1,7 @@
 /**
  *----------------------------------------------------------------------------
  *
- * @file	$Id: GraphTRDialogNDIS.cpp 133 2008-06-15 06:23:53Z Salt $
+ * @file	$Id: GraphTRDialogNDIS.cpp 137 2008-09-23 11:57:05Z Salt $
  * @brief	CGraphTRDialog を継承した NDIS 情報を取得するクラス
  *
  * @author  Salt
@@ -286,9 +286,10 @@ BOOL CGraphTRDialogNDIS::GetData(int &nBarTransmitted, int &nBarReceived, BOOL b
 			return FALSE;
 		}
 	}
-	else
+	else {
+		m_nCountAutoDisconnect = 0;
 		return FALSE;
-
+	}
 }
 
 // http://blog.tauchi.net/2007/12/wifiautodisconnect.html を参考にさせてもらいました。ありがとうございます。

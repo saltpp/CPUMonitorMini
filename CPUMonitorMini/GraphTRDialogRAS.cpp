@@ -1,7 +1,7 @@
 /**
  *----------------------------------------------------------------------------
  *
- * @file	$Id: GraphTRDialogRAS.cpp 133 2008-06-15 06:23:53Z Salt $
+ * @file	$Id: GraphTRDialogRAS.cpp 137 2008-09-23 11:57:05Z Salt $
  * @brief	CGraphTRDialog ‚ğŒp³‚µ‚½ RAS î•ñ‚ğæ“¾‚·‚éƒNƒ‰ƒX
  *
  * @author  Salt
@@ -241,8 +241,10 @@ BOOL CGraphTRDialogRAS::GetData(int &nBarTransmitted, int &nBarReceived, BOOL bL
 		}
 
 	}
-	else
+	else {
+		m_nCountAutoDisconnect = 0;
 		return FALSE;
+	}
 }
 
 
